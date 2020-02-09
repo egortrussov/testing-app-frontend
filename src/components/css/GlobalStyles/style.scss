@@ -1,0 +1,81 @@
+@import '../config';
+
+$radioSize: 18px;
+$radioBorder: #D1D7E3;
+$radioActive: #42C465;
+
+.heading {
+    font-size: 2.1rem;
+    margin-bottom: 1.1rem;
+}
+
+.subheading {
+    font-size: 1.6rem;
+    margin-bottom: .8rem;
+}
+
+.page-top {
+    margin-bottom: 1.3rem;
+
+    a {
+        color: $dark-color !important;
+        font-size: 1.3rem;
+    }
+}
+
+.btn {
+    position: relative;
+    padding: .6rem 1.8rem;
+    background-color: $primary-color;
+    display: inline-block;
+    margin-top: 1.3rem;
+    margin-bottom: .1rem;
+    color: #fff;
+    border-radius: .5rem;
+    font-weight: 700;
+    border: none;
+}
+
+input[type="radio"] {
+    display: none;
+    & + label {
+        line-height: $radioSize;
+        height: $radioSize;
+        padding-left: $radioSize;
+        display: inline-block;
+        position: relative;
+        &:not(:empty) {
+            padding-left: $radioSize + 8;
+        }
+        &:before,
+        &:after {
+            content: '';
+            width: $radioSize;
+            height: $radioSize;
+            display: block;
+            border-radius: 50%;
+            left: 0;
+            top: 0;
+            position: absolute;
+        }
+        &:before {
+            background: $radioBorder;
+            transition: background .2s ease, transform .4s cubic-bezier(.175, .885, .32, 2);
+        }
+        &:after {
+            background: #fff;
+            transform: scale(.78);
+            transition: transform .6s cubic-bezier(.175, .885, .32, 1.4);
+        }
+    }
+    &:checked + label {
+        &:before {
+            transform: scale(1.04);
+            background: $radioActive;
+        }
+        &:after {
+            transform: scale(.4);
+            transition: transform .3s ease;
+        }
+    }
+}

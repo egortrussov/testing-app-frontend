@@ -1,0 +1,119 @@
+@import '_config';
+
+.app-container {
+    background-color: $primary-color;
+    height: 100vh;
+    position: relative;
+    width: 100%;
+    display: flex;
+    font-family: 'Nunito', sans-serif;
+
+    nav {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 2rem 0;
+        width: 300px;
+
+        .nav-item {
+
+            .logo {
+                color: #fff;
+                font-weight: 800;
+                margin-left: 10px;;
+                letter-spacing: 1px;
+            }
+
+            .nav-link {
+                display: inline-block;
+                font-size: 1.2rem;
+                width: 100%;
+                text-decoration: none !important;
+                color: #fff;
+                padding: 10px;
+                font-weight: 700;
+                
+
+                &.active {
+                    background-color: $dark-color !important;
+                }
+
+                &:hover {
+                    background-color: #47D36D;
+                }
+
+                i {
+                    margin-right: .3rem;
+                }
+            }
+        }
+
+        button {
+            background: none !important;
+            border: none;
+            text-align: left;
+        }
+    }
+
+    main {
+        background-color: #fff;
+        width: 100%;
+        border-top-left-radius: 40px;;
+        border-bottom-left-radius: 40px;
+        padding: 40px;
+        overflow-y: scroll;
+    }
+}
+
+.field {
+    position: relative;
+    display: inline-block;
+    min-width: 200px;
+    width: auto;
+    padding: .3rem;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 3px;
+        width: 100%;
+        background-color: #ddd;
+        transition: all .2s;
+        top: calc(100% + 2px);
+        z-index: 2;
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 3px;
+        width: 0;
+        z-index: 3;
+        background-color: $dark-color;
+        transition: all .2s;
+        top: calc(100% + 2px);
+    }
+
+    &:focus {
+        outline: none;
+
+        &:before {
+            width: 100%;
+        }
+    }
+}
+
+.error-input {
+    margin-top: .3rem;
+    font-size: 16px;
+    color: $danger-color;
+    height: 10px !important;
+    display: block;
+    min-height: 16px !important;
+    min-width: 10px !important;
+}

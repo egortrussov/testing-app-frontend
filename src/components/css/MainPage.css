@@ -1,0 +1,127 @@
+.app-container {
+  background-color: #4ADB71;
+  height: 100vh;
+  position: relative;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-family: 'Nunito', sans-serif;
+}
+
+.app-container nav {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 2rem 0;
+  width: 300px;
+}
+
+.app-container nav .nav-item .logo {
+  color: #fff;
+  font-weight: 800;
+  margin-left: 10px;
+  letter-spacing: 1px;
+}
+
+.app-container nav .nav-item .nav-link {
+  display: inline-block;
+  font-size: 1.2rem;
+  width: 100%;
+  text-decoration: none !important;
+  color: #fff;
+  padding: 10px;
+  font-weight: 700;
+}
+
+.app-container nav .nav-item .nav-link.active {
+  background-color: #42C465 !important;
+}
+
+.app-container nav .nav-item .nav-link:hover {
+  background-color: #47D36D;
+}
+
+.app-container nav .nav-item .nav-link i {
+  margin-right: .3rem;
+}
+
+.app-container nav button {
+  background: none !important;
+  border: none;
+  text-align: left;
+}
+
+.app-container main {
+  background-color: #fff;
+  width: 100%;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+  padding: 40px;
+  overflow-y: scroll;
+}
+
+.field {
+  position: relative;
+  display: inline-block;
+  min-width: 200px;
+  width: auto;
+  padding: .3rem;
+}
+
+.field::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  height: 3px;
+  width: 100%;
+  background-color: #ddd;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+  top: calc(100% + 2px);
+  z-index: 2;
+}
+
+.field::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  height: 3px;
+  width: 0;
+  z-index: 3;
+  background-color: #42C465;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+  top: calc(100% + 2px);
+}
+
+.field:focus {
+  outline: none;
+}
+
+.field:focus:before {
+  width: 100%;
+}
+
+.error-input {
+  margin-top: .3rem;
+  font-size: 16px;
+  color: #fc393e;
+  height: 10px !important;
+  display: block;
+  min-height: 16px !important;
+  min-width: 10px !important;
+}
+/*# sourceMappingURL=MainPage.css.map */
