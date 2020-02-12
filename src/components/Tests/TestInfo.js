@@ -22,7 +22,7 @@ export default class TestInfo extends Component {
         let field = document.querySelector('span.field');
         console.log(field);
         
-        if (field) field.addEventListener('keypress',function(e){ 
+        if (field !== null && field) field.addEventListener('keypress',function(e){ 
             if (e.which === 13) {
                 e.preventDefault();
             }
