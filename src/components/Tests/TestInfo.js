@@ -28,7 +28,7 @@ export default class TestInfo extends Component {
             }
         });
         
-        fetch(`/api/tests/testInfo/${ testId }`)
+        fetch(`https://testing-app-easytest.herokuapp.com/api/tests/testInfo/${ testId }`)
             .then(res => res.json())
             .then(res => {
                 console.log(res);
@@ -37,7 +37,7 @@ export default class TestInfo extends Component {
                     test: res
                 })
             })
-        fetch(`/api/tests/testResults/${ testId }`)
+        fetch(`https://testing-app-easytest.herokuapp.com/api/tests/testResults/${ testId }`)
             .then(res => res.json())
             .then(res => {
                 console.log(res);
