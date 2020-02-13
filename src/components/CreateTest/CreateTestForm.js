@@ -93,10 +93,10 @@ export default class CreateTestForm extends Component {
         })
     }
 
-    setTestDescription(e) {
+    setTestDescription(e) {        
         this.setState({
             ...this.state,
-            description: e.target.innerText
+            description: e.target.value
         })
     }
 

@@ -80,7 +80,7 @@ export default class TestInfo extends Component {
         let field = document.querySelector('span.field');
         console.log(field);
         
-        field.addEventListener('keypress',function(e){ 
+        if (field && field !== null) field.addEventListener('keypress',function(e){ 
             if (e.which === 13) {
                 e.preventDefault();
             }
@@ -89,6 +89,8 @@ export default class TestInfo extends Component {
 
     render() {
         const { isLoading, test, testResults, errors } = this.state;
+        console.log(test);
+        
 
         if (isLoading || test === null) return (
             <Spinner />
