@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 
+import Spinner from '../Spinner/Spinner'
+
 import TestsContext from '../../context/TestsContext'
 
 import './css/style.css'
@@ -22,7 +24,9 @@ export default class CreateTestForm extends Component {
         subject: '',
         isProtected: false,
         accessKey: '',
-        creator: this.context.userId
+        creator: this.context.userId,
+        timeErrorMsg: '',
+        isLoading: false
     }
 
     static contextType = TestsContext;
@@ -134,19 +138,37 @@ export default class CreateTestForm extends Component {
     }
 
     handleAddTest() {
+        this.setState({
+            ...this.state,
+            isLoading: true
+        })
+
         if (!this.context.userId) 
             window.location.href = '/app/login'
         
         fetch(`${ this.context.proxy }/api/tests/createTest`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-auth-token': this.context.token
             },
             body: JSON.stringify(this.state)
         })
             .then(res => res.json())
             .then(res => {
-                window.location.href = '/app/allTests'
+                console.log(res);
+                
+                if (!res.success) {
+                    if (res.isTimeErr) {
+                        this.setState({
+                            ...this.state,
+                            timeErrorMsg: 'You cannot create more than 1 test in 5 minutes!',
+                            isLoading: false
+                        })
+                    }
+                } else {
+                    window.location.href = '/app/allTests'
+                }
             })
     }
 
@@ -195,8 +217,10 @@ export default class CreateTestForm extends Component {
     }
 
     render() {
-        const { questions, isProtected } = this.state;
+        const { questions, isProtected, timeErrorMsg, isLoading, title, description } = this.state;
 
+        console.log(isLoading);
+        
         const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
         return (
@@ -207,7 +231,7 @@ export default class CreateTestForm extends Component {
                 <div className="test-basic-info">
                     <div className="info-group">
                         <label htmlFor="title">Test name: </label>
-                        <span className="field" contenteditable="true" onInput={ (e) => this.setTestTitle(e) } type="text" name="title"> </span>
+                        <span value={ title } className="field" contenteditable="true" onInput={ (e) => this.setTestTitle(e) } type="text" name="title"></span>
                     </div>
                     <div className="info-group">
                         <label htmlFor="subject">Subject: </label>
@@ -259,7 +283,14 @@ export default class CreateTestForm extends Component {
                         New question
                     </button>
                 </div>
+                { timeErrorMsg && (
+                    <span className="error-msg">
+                        { timeErrorMsg }
+                    </span>
+                ) }
                 <button onClick={ this.handleAddTest.bind(this) } className="btn btn-cta">Create test!</button>
+                
+                { isLoading && <Spinner size="sm" /> }
             </div>
         )
     }
