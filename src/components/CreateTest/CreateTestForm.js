@@ -27,10 +27,123 @@ export default class CreateTestForm extends Component {
         creator: this.context.userId,
         timeErrorMsg: '',
         isLoading: false,
-        errors: []
+        errors: [],
+        maxAttempts: null,
+        isLimitedAttempts: false,
+        isLimitedTime: false,
+        timeLimit: null
     }
 
     static contextType = TestsContext;
+
+    componentDidMount() {
+                
+        var x, i, selElmnt, a, b, c;
+        /* Look for any elements with the class "custom-select": */
+        x = document.getElementsByClassName('custom-select');
+        console.log(x);
+
+        let timeValues = [5 * 60, 10 * 60, 20 * 60, 30 * 60, 1 * 60 * 60, 1.5 * 60 * 60];
+
+        const setst = (j) => {
+            console.log("hhhh");
+            
+            this.setState({
+                ...this.state,
+                timeLimit: timeValues[j - 1]
+            }, () => console.log(this.state))
+        }
+
+        for (i = 0; i < x.length; i++) {
+            selElmnt = x[i].getElementsByTagName('select')[0];
+            /* For each element, create a new DIV that will act as the selected item: */
+            a = document.createElement('DIV');
+            a.setAttribute('class', 'select-selected');
+            a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+            x[i].appendChild(a);
+            /* For each element, create a new DIV that will contain the option list: */
+            b = document.createElement('DIV');
+            b.setAttribute('class', 'select-items select-hide');
+            for (let j = 1; j < selElmnt.length; j++) {
+                /* For each option in the original select element,
+            create a new DIV that will act as an option item: */
+                c = document.createElement('DIV');
+                c.innerHTML = selElmnt.options[j].innerHTML;
+                console.log(selElmnt);
+                
+                c.addEventListener('click', function(e) {
+                    /* When an item is clicked, update the original select box,
+                and the selected item: */
+                    
+                    var y, i, k, s, h;
+                    s = this.parentNode.parentNode.getElementsByTagName('select')[0];
+                    h = this.parentNode.previousSibling;
+                    console.log(timeValues[j - 1]);
+                    // this.setState({
+                    //     ...this.state,
+                    //     timeLimit: timeValues[j - 1]
+                    // })
+                    
+                    
+                    for (i = 0; i < s.length; i++) {
+                        if (s.options[i].innerHTML == this.innerHTML) {
+                            s.selectedIndex = i;
+
+                            h.innerHTML = this.innerHTML;
+                            y = this.parentNode.getElementsByClassName(
+                                'same-as-selected'
+                            );
+                            for (k = 0; k < y.length; k++) {
+                                y[k].removeAttribute('class');
+                            }
+                            this.setAttribute('class', 'same-as-selected');
+                            break;
+                        }
+                    }
+                    h.click();
+
+                    setst(j);
+                });
+                b.appendChild(c);
+            }
+            x[i].appendChild(b);
+            a.addEventListener('click', function(e) {
+                /* When the select box is clicked, close any other select boxes,
+            and open/close the current select box: */
+                e.stopPropagation();
+                closeAllSelect(this);
+                this.nextSibling.classList.toggle('select-hide');
+                this.classList.toggle('select-arrow-active');
+            });
+        }
+
+        function closeAllSelect(elmnt) {
+            /* A function that will close all select boxes in the document,
+        except the current select box: */
+            var x,
+                y,
+                i,
+                arrNo = [];
+            x = document.getElementsByClassName('select-items');
+            y = document.getElementsByClassName('select-selected');
+            for (i = 0; i < y.length; i++) {
+                if (elmnt == y[i]) {
+                    arrNo.push(i);
+                } else {
+                    y[i].classList.remove('select-arrow-active');
+                }
+            }
+            for (i = 0; i < x.length; i++) {
+                if (arrNo.indexOf(i)) {
+                    x[i].classList.add('select-hide');
+                }
+            }
+        }
+
+        document.addEventListener('click', closeAllSelect);
+
+    }
+    
 
     handleAddAnswer(quesId) {
         const { questions } = this.state;        
@@ -120,11 +233,36 @@ export default class CreateTestForm extends Component {
         })
     }
 
+    setAttemptsState(e) {
+        this.setState({
+            ...this.state,
+            isLimitedAttempts: !this.state.isLimitedAttempts,
+            maxAttempts: null
+        })
+    }
+
+    setTimeLimitState(e) {
+        this.setState({
+            ...this.state,
+            isLimitedTime: !this.state.isLimitedTime,
+            timeLimit: null
+        })
+    }
+
     setAccessKey(e) {
         this.setState({
             ...this.state,
             accessKey: e.target.innerText
         })
+    }
+
+    setAttemptsNumber(e) {
+        this.setState({
+            ...this.state,
+            maxAttempts: parseInt(e.target.value)
+        })
+        console.log(this.state);
+        
     }
 
     setCorrectAnswerId(quesIndex, ansId) {
@@ -145,7 +283,9 @@ export default class CreateTestForm extends Component {
         })
 
         let newTest = this.state;
-
+        
+        console.log(this.state);
+        
         let errors = [];
 
         if (!newTest.title) 
@@ -243,9 +383,9 @@ export default class CreateTestForm extends Component {
     }
 
     render() {
-        const { questions, isProtected, timeErrorMsg, isLoading, title, errors } = this.state;
+        const { questions, isProtected, timeErrorMsg, isLoading, title, errors, isLimitedAttempts, isLimitedTime } = this.state;
 
-        console.log(isLoading);
+        console.log(isLimitedTime);
         
         const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -277,6 +417,45 @@ export default class CreateTestForm extends Component {
                         <div className="info-group">
                             <label htmlFor="key">Secret key: </label>
                             <span class="field" contenteditable="true" onInput={ (e) => this.setAccessKey(e) } name="key" > </span>
+                        </div>
+                    ) }
+                    <div className="info-group-checkbox">
+                        <input onChange={ this.setAttemptsState.bind(this) } type="checkbox" name="isLimitedAttempts" />
+                        <label htmlFor="isLimitedAttempts" name="isLimitedAttempts">Limited attempts</label>
+                    </div>
+                    { isLimitedAttempts && (
+                        <div className="info-group">
+                            <label htmlFor="key">Maximum attempts: </label>
+                            <input type="number" min="1" max="10" onChange={ (e) => this.setAttemptsNumber(e) } name="key"  />
+                        </div>
+                    ) }
+                    <div className="info-group-checkbox">
+                        <input onChange={ this.setTimeLimitState.bind(this) } type="checkbox" name="isLimitedTime" />
+                        <label htmlFor="isLimitedTime" name="isLimitedTime">Limited time</label>
+                    </div>
+                    { isLimitedTime ? (
+                        <div className="custom-select" style={{ width: 300 + 'px' }}>
+                            <select>
+                                <option value="0">Select time limit:</option>
+                                <option value="1">5 minutes</option>
+                                <option value="2">10 minutes</option>
+                                <option value="3">20 minuted</option>
+                                <option value="4">30 minutes</option>
+                                <option value="5">1 hour</option>
+                                <option value="6">1.5 hours</option>
+                            </select>
+                        </div>
+                    ) : (
+                        <div className="custom-select" style={{ width: 300 + 'px', visibility: 'hidden' }}>
+                            <select>
+                                <option value="0">Select time limit:</option>
+                                <option value="1">5 minutes</option>
+                                <option value="2">10 minutes</option>
+                                <option value="3">20 minuted</option>
+                                <option value="4">30 minutes</option>
+                                <option value="5">1 hour</option>
+                                <option value="6">1.5 hours</option>
+                            </select>
                         </div>
                     ) }
                     

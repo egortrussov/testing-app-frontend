@@ -4,6 +4,7 @@ import TestsContext from '../../context/TestsContext'
 import Spinner from '../Spinner/Spinner'
 
 import './css/style.css'
+import { convertTimeShort } from '../../middleware/convertTime'
 
 export default class PassTest extends Component {
     state = {
@@ -11,7 +12,9 @@ export default class PassTest extends Component {
         test: [],
         answers: [],
         answeredQuestions: 0,
-        isSubmitted: false
+        isSubmitted: false,
+        isTimeUp: false,
+        time: null
     }
 
     static contextType = TestsContext;
@@ -30,21 +33,51 @@ export default class PassTest extends Component {
                     answers,
                     test: res
                 })
+
+                if (res.timeLimit) {
+                    const { timeLimit } = res;
+                    let time = timeLimit;
+                    setInterval(() => {
+                        time = Math.max(time - 1, 0);
+                        let { isTimeUp } = this.state;
+                        if (!isTimeUp && time <= 0) {
+                            isTimeUp = true;
+                            let els = document.querySelectorAll("input[type='radio']");
+                            els.forEach(el => {
+                                el.setAttribute('onChange', 'return false');
+                                el.setAttribute('onClick', 'return false');
+                            })
+                        }
+                        this.setState({
+                            ...this.state,
+                            isTimeUp,
+                            time
+                        });
+                        
+                    }, 1000)
+                }
+
+                
             })
     }
 
     handleSelect(index, answerId) {
-        console.log(index, answerId);
-        let { answers, answeredQuestions } = this.state;
-        if (typeof(answers[index]) === 'undefined') {
-            answeredQuestions++;
+        let { answers, answeredQuestions, isTimeUp } = this.state;
+        
+        if (isTimeUp) 
+            return;
+        else {
+            if (typeof(answers[index]) === 'undefined') {
+                answeredQuestions++;
+            }
+            answers[index] = answerId;
+            this.setState({
+                ...this.state,
+                answers,
+                answeredQuestions
+            }, () => console.log(this.state) )
         }
-        answers[index] = answerId;
-        this.setState({
-            ...this.state,
-            answers,
-            answeredQuestions
-        }, () => console.log(this.state) )
+        
     }
 
     finishTest(e) {
@@ -60,6 +93,9 @@ export default class PassTest extends Component {
             ...this.state,
             isSubmitted: true
         })
+
+        console.log('finish!');
+        
 
         test.questions.map((ques, index) => {
             if (ques.correctAnswerId === answers[index]) {
@@ -93,7 +129,7 @@ export default class PassTest extends Component {
     }
 
     render() {
-        const { isLoading, test } = this.state;
+        const { isLoading, test, answeredQuestions, time } = this.state;
         const { questions } = test;
 
         if (isLoading) return (
@@ -101,33 +137,45 @@ export default class PassTest extends Component {
         )
 
         return (
-            <form className="test-form" onSubmit={ e => this.finishTest(e) }>
-                <h1 className="heading">
-                    Pass test '{ test.title }'
-                </h1>
-                <div className="test-questions">
-                    { questions.map((ques, index) => {
-                        return (
-                            <div className="question-card">
-                                <h3 className="question-title">
-                                    { index + 1 }.  { ques.title }
-                                </h3>
-                                <div className="answers">
-                                    { ques.answers.map(ans => {
-                                        return (
-                                            <div className="answer">
-                                                <input onChange={ this.handleSelect.bind(this, index, ans.answerId) } id={ ans._id } type="radio" name={ index } />
-                                                <label htmlFor={ ans._id }>{ ans.text }</label>
-                                            </div>
-                                        )
-                                    }) }
-                                </div>
-                            </div>
-                        )
-                    }) }
+            <>
+                <div className="info-block">
+                    <div>
+                        { test.timeLimit && (
+                            <span>Time left: { convertTimeShort(time) }</span>
+                        ) } 
+                    </div>
+                    <div>
+                        Answered questions: { answeredQuestions } / { questions.length }
+                    </div>
                 </div>
-                <input type="submit" className="btn btn-cta" value="Finish" />
-            </form>
+                <form className="test-form" onSubmit={ e => this.finishTest(e) }>
+                    <h1 className="heading">
+                        Pass test '{ test.title }'
+                    </h1>
+                    <div className="test-questions">
+                        { questions.map((ques, index) => {
+                            return (
+                                <div className="question-card">
+                                    <h3 className="question-title">
+                                        { index + 1 }.  { ques.title }
+                                    </h3>
+                                    <div className="answers">
+                                        { ques.answers.map(ans => {
+                                            return (
+                                                <div className="answer">
+                                                    <input onChange={ this.handleSelect.bind(this, index, ans.answerId) } id={ ans._id } type="radio" name={ index } />
+                                                    <label htmlFor={ ans._id }>{ ans.text }</label>
+                                                </div>
+                                            )
+                                        }) }
+                                    </div>
+                                </div>
+                            )
+                        }) }
+                    </div>
+                    <input type="submit" className="btn btn-cta" value="Finish" />
+                </form>
+            </>
         )
     }
 }
